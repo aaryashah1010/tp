@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sweet Slideshow — Khush Raho</title>
+  <style>
+    /* Soft, sweet UI */
+    :root {
+      --bg: #fff7f2;
+      --card: #fff;
+      --accent: #ff6b81;
+      --muted: #6b7280;
+      --glass: rgba(255, 255, 255, 0.6);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #fff7f2, #ffeef0);
+      font-family: Inter, system-ui, Segoe UI, Arial, sans-serif;
+      color: #111;
+    }
+    .wrap {
+      width: 960px;
+      max-width: 95%;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(17,24,39,0.12);
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 18px;
+      align-items: center;
+    }
+
+    /* Left: slideshow */
+    .slideshow {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      width: 100%;
+      height: 420px;   /* ✅ fixed height so images are visible */
+      background: linear-gradient(
+        180deg,
+        rgba(255, 107, 129, 0.07),
+        rgba(255, 235, 238, 0.03)
+      );
+    }
+    .slides {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(1.02);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* caption overlay */
+    .overlay {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75));
+      backdrop-filter: blur(6px);
+      padding: 10px 14px;
+      border-radius: 10px;
+      box-shadow: 0 4px 18px rgba(2,6,23,0.08);
+    }
+    .overlay h2 {
+      margin: 0;
+      font-size: 16px;
+      color: #111;
+    }
+    .overlay p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* right column: message + controls */
+    .side {
+      padding: 6px 10px;
+    }
+    .message {
+      background: linear-gradient(180deg, #fff, #fff7f2);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(17,24,39,0.06);
+      min-height: 220px;
+    }
+    .message h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: var(--accent);
+    }
+    .message p {
+      margin: 0;
+      color: #111;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .btn {
+      border: none;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+    }
+    .btn.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(255,107,129,0.12);
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(17,24,39,0.12);
+      cursor: pointer;
+    }
+    .dot.active {
+      background: var(--accent);
+    }
+
+    @media (max-width: 880px) {
+      .wrap {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+      .side {
+        order: 2;
+      }
+      .slideshow {
+        height: 300px; /* smaller on mobile */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="slideshow" aria-label="photo slideshow">
+      <div class="slides" id="slides">
+        <!-- Slides injected by JS -->
+      </div>
+
+      <div class="overlay">
+        <h2>Khush Raho Yaar 🌸</h2>
+        <p style="font-size:13px;color:var(--muted);">
+          Sweet memories — enjoy the slideshow. Use arrows or controls to pause/play.
+        </p>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="message">
+        <h3>Hello bacha:</h3>
+        <p id="userMsg">
+          Khush rahe tu yaar dont be sad pls always be happy and no one is taking
+          your life mai bhi nai mat bata ke jana tu if you feel like i am stopping
+          you adn all really sorry for that bus stay happy always and i am with you
+          i will keep you happy always
+        </p>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="playPause">Pause</button>
+        <button class="btn secondary" id="prevBtn">Prev</button>
+        <button class="btn secondary" id="nextBtn">Next</button>
+      </div>
+
+      <div class="dots" id="dots"></div>
+    </div>
+  </div>
+
+  <script>
+    // === CONFIG ===
+    const photos = [
+      "images/photo1.jpg",
+      "images/photo2.jpg",
+      "images/photo3.jpg"
+    ];
+    const AUTOPLAY_MS = 3000; // 3 seconds per slide
+
+    // app state
+    let current = 0;
+    let playing = true;
+    let timer = null;
+
+    const slidesEl = document.getElementById("slides");
+    const dotsEl = document.getElementById("dots");
+    const playPauseBtn = document.getElementById("playPause");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function createSlides() {
+      photos.forEach((src, i) => {
+        const s = document.createElement("div");
+        s.className = "slide" + (i === 0 ? " active" : "");
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "Photo " + (i + 1);
+        s.appendChild(img);
+        slidesEl.appendChild(s);
+
+        const dot = document.createElement("div");
+        dot.className = "dot" + (i === 0 ? " active" : "");
+        dot.addEventListener("click", () => goTo(i));
+        dotsEl.appendChild(dot);
+      });
+    }
+
+    function update() {
+      const slides = slidesEl.querySelectorAll(".slide");
+      const dots = dotsEl.querySelectorAll(".dot");
+      slides.forEach((sl, idx) => sl.classList.toggle("active", idx === current));
+      dots.forEach((d, idx) => d.classList.toggle("active", idx === current));
+    }
+
+    function next() {
+      current = (current + 1) % photos.length;
+      update();
+    }
+    function prev() {
+      current = (current - 1 + photos.length) % photos.length;
+      update();
+    }
+    function goTo(i) {
+      current = i;
+      update();
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      timer = setInterval(() => next(), AUTOPLAY_MS);
+      playing = true;
+      playPauseBtn.textContent = "Pause";
+    }
+    function stopAutoplay() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      playing = false;
+      playPauseBtn.textContent = "Play";
+    }
+    function togglePlay() {
+      if (playing) stopAutoplay();
+      else startAutoplay();
+    }
+
+    playPauseBtn.addEventListener("click", togglePlay);
+    prevBtn.addEventListener("click", () => {
+      prev();
+      if (playing) restartTimer();
+    });
+    nextBtn.addEventListener("click", () => {
+      next();
+      if (playing) restartTimer();
+    });
+
+    function restartTimer() {
+      stopAutoplay();
+      startAutoplay();
+    }
+
+    // keyboard support
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") {
+        next();
+        if (playing) restartTimer();
+      }
+      if (e.key === "ArrowLeft") {
+        prev();
+        if (playing) restartTimer();
+      }
+      if (e.key === " ") {
+        e.preventDefault();
+        togglePlay();
+      }
+    });
+
+    // init
+    createSlides();
+    startAutoplay();
+  </script>
+</body>
+</html>
