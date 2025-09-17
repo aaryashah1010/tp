@@ -1,322 +1,179 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>I'm Sorry</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>I miss you 🌸</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+    :root{
+      --bg:#FFF7F9;
+      --card:#ffffff;
+      --accent:#F6685E;
+      --muted:#6b6b6b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Poppins',system-ui,Arial; background: linear-gradient(180deg,#fff7fb 0%, #fffefc 100%);}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    .card{
+      width:100%;max-width:860px;background:var(--card);border-radius:18px;padding:32px;box-shadow:0 10px 30px rgba(114,79,79,0.08);position:relative;overflow:hidden;
     }
 
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
-      min-height: 100vh;
-      color: #333;
-      overflow-x: hidden;
+    .header{
+      display:flex;gap:16px;align-items:center;margin-bottom:6px
+    }
+    .avatar{width:68px;height:68px;border-radius:12px;flex:0 0 68px;background:linear-gradient(135deg,#ffd1dc, #fff1f3);display:flex;align-items:center;justify-content:center;font-weight:600;color:#7a2b2b}
+    .title{font-size:18px;font-weight:600}
+    .subtitle{color:var(--muted);font-size:13px;margin-top:4px}
+
+    .message{margin-top:18px;font-size:16px;line-height:1.6;color:#4a2d2d}
+    .message p{margin:10px 0}
+
+    .photo-space{
+      margin-top:20px;
+      width:100%;
+      height:260px;
+      border:2px dashed #ffd1dc;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff9fa;
+      overflow:hidden;
+    }
+    .photo-space img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:cover;
+      border-radius:12px;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
+    .controls{margin-top:20px;display:flex;gap:12px;align-items:center}
+    .btn{background:var(--accent);color:white;padding:10px 16px;border-radius:12px;border:0;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(246,104,94,0.22)}
+    .btn:active{transform:translateY(1px)}
+    .glass{background:rgba(255,255,255,0.7);border-radius:12px;padding:8px 12px;font-size:14px;color:var(--muted)}
 
-    .card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      border-radius: 25px;
-      padding: 40px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      animation: fadeInUp 1s ease-out;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
+    /* flower animation area */
+    .stage{position:absolute;left:0;right:0;bottom:0;top:0;pointer-events:none;overflow:hidden;}
 
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    h1 {
-      color: #ff6b6b;
-      margin-bottom: 25px;
-      font-weight: 700;
-      font-size: 2.3em;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .apology-text {
-      font-size: 1.05em;
-      line-height: 1.8;
-      margin-bottom: 30px;
-      color: #444;
-      text-align: left;
-      font-weight: 400;
-    }
-
-    .highlight {
-      color: #6a5acd;
-      font-weight: 600;
-    }
-
-    .memories-section {
-      margin: 25px 0;
-    }
-
-    .memories-btn {
-      background: linear-gradient(45deg, #f78ca0, #f9748f, #fd868c, #fe9a8b);
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 50px;
-      font-size: 1.05em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.2);
-    }
-
-    .memories-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    }
-
-    .slideshow-container {
-      position: relative;
-      max-width: 500px;
-      margin: 30px auto;
-      display: none;
-      animation: fadeIn 0.5s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .slide {
-      display: none;
-      text-align: center;
-    }
-
-    .slide.active {
-      display: block;
-    }
-
-    .slide img {
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-      border-radius: 18px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .slide-content {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 18px;
-      margin: 12px 0;
-      border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .slide h3 {
-      color: #ff6b6b;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-
-    .nav-buttons {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .nav-btn {
-      background: #6a5acd;
-      color: white;
-      border: none;
-      padding: 10px 22px;
-      margin: 0 8px;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .nav-btn:hover {
-      background: #836fff;
-    }
-
-    .final-message {
-      background: rgba(255, 182, 193, 0.2);
-      border-left: 4px solid #ff6b6b;
-      padding: 20px;
-      margin: 30px 0;
-      border-radius: 12px;
-      font-style: italic;
-      color: #444;
-    }
-
-    .heart {
-      color: #e74c3c;
-      animation: heartbeat 2s infinite;
-    }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-    }
-
-    .music-note {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      font-size: 2em;
-      color: rgba(255, 255, 255, 0.7);
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-
-    @media (max-width: 768px) {
-      .card {
-        padding: 20px;
-        margin: 10px;
-      }
-
-      h1 {
-        font-size: 1.9em;
-      }
-
-      .apology-text {
-        font-size: 0.95em;
-      }
-    }
+    /* small responsive tweaks */
+    @media (max-width:520px){.card{padding:20px}.avatar{width:56px;height:56px}}
   </style>
 </head>
 <body>
-  <div class="music-note">🎵</div>
-
-  <div class="container">
-    <div class="card">
-      <h1>I'm Really Sorry </h1>
-
-      <div class="apology-text">
-        <p>Hi, I am really sorry. I never knew this day would come – the day you’d get so irritated because of my behavior. I never imagined that in my life I could be the worst. I am truly sorry.</p>
-
-        <p>I am doing too much, and because of that you get irritated with me. I know I trouble you a lot now, and maybe in the future even more. I feel you might definitely leave me someday because of my behavior.</p>
-
-        <p>But trust me, all this is only happening because <span class="highlight">I am very, very, very attached to you</span> and I have very strong feelings for you. I can’t express everything, but I hope you understand why this happens. Deep inside, it’s only because I care so much.</p>
-
-        <p>I never thought I would trouble you this much or irritate you so badly. For that, I am extremely sorry. Sometimes I feel I can’t make you happy. But all I want, more than anything, is <span class="highlight">you – nothing else</span>.</p>
-
-        <p>If one day you feel like leaving me, I won’t stop you. I won’t even be surprised, because I know it would be my fault. Still, I just want you to stay happy… you deserve the very best.</p>
-      </div>
-
-      <div class="memories-section">
-        <p style="margin-bottom: 20px; color: #6a5acd; font-weight: 600;">Now let me show you some happy moments – I hope these make you smile:</p>
-        <button class="memories-btn" onclick="showMemories()">View Our Memories 📸</button>
-      </div>
-
-      <div class="slideshow-container" id="slideshow">
-        <div class="slide active">
-          <div class="slide-content">
-            <h3>1) Navratri Celebrations 🎉</h3>
-            <img src="/images/photo4.jpg" alt="Navratri Memory">
-            <p style="margin-top: 15px; color: #666;">Beautiful memories of our Navratri celebrations together</p>
-          </div>
-        </div>
-
-        <div class="slide">
-          <div class="slide-content">
-            <h3>2) Our Trip Together 🚗</h3>
-            <img src="/images/photo2.jpg" alt="Trip Memory">
-            <p style="margin-top: 15px; color: #666;">The wonderful moments we shared during our trip</p>
-          </div>
-        </div>
-
-        <div class="slide">
-          <div class="slide-content">
-            <h3>3) My Sorry </h3>
-            <img src="/images/photo5.jpg" alt="Sorry Face">
-            <p style="margin-top: 15px; color: #666;">This is how sorry I truly am</p>
-          </div>
-        </div>
-
-        <div class="nav-buttons">
-          <button class="nav-btn" onclick="changeSlide(-1)">❮ Previous</button>
-          <button class="nav-btn" onclick="changeSlide(1)">Next ❯</button>
+  <div class="wrap">
+    <div class="card" id="card">
+      <div class="header">
+        <div class="avatar">💌</div>
+        <div>
+          <div class="title">I miss you</div>
+          <div class="subtitle">A small message and a flower surprise 🌼</div>
         </div>
       </div>
 
-      <div class="final-message">
-        <p><strong>Stay happy, bye bye 👋</strong></p>
-        <br>
-        <p>I don’t think I should talk to you today, because I might bother you even more. That’s why I created an automated WhatsApp message that will be sent to you at 6:50. If anything happens, please call me – I will never get irritated since <span class="highlight">you are the best</span>. <span class="heart">❤️</span></p>
+      <div class="message" id="message">
+        <p>"Aaj bahut yaad aa rahi hai tere idk i am crying only kuch jyada he yaad aa rahi hai i hope tu idhar hoti subah se bahut ye yaad aa rahi hai to i was seeing our photo and usme ye mila to mujhe bahut acha laga to i thought i show it to you ...ye mai lada and all thats because i miss you a lot aaj aah idk sorry aaur wo kyu hua i hope you will understand i miss you a lot❤"</p>
       </div>
+
+      <div class="photo-space">
+        <img src="/images/photo6.jpg" alt="Our Memory" />
+      </div>
+
+      <div class="controls">
+        <button id="flowerBtn" class="btn">Get a flower 🌸</button>
+        <div class="glass">Click to send a flower animation</div>
+      </div>
+
+      <div class="stage" id="stage" aria-hidden="true"></div>
     </div>
   </div>
 
-  <!-- Background Music -->
-  <audio id="background-music" loop>
-    <source src="/music/kabhi.mp3" type="audio/mp3">
-    <!-- Replace with actual Kabhi Alvida Na Kehna mp3 file -->
-  </audio>
-
   <script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
+    const stage = document.getElementById('stage');
+    const btn = document.getElementById('flowerBtn');
 
-    function showMemories() {
-      document.getElementById('slideshow').style.display = 'block';
-      document.getElementById('slideshow').scrollIntoView({ behavior: 'smooth' });
+    function rand(min, max){return Math.random()*(max-min)+min}
 
-      const music = document.getElementById('background-music');
-      music.play().catch(e => {
-        console.log('Autoplay blocked by browser');
-      });
+    function createFlower(x, y){
+      const flower = document.createElement('div');
+      flower.style.position = 'absolute';
+      flower.style.left = x + 'px';
+      flower.style.top = y + 'px';
+      flower.style.pointerEvents = 'none';
+      flower.style.width = '48px';
+      flower.style.height = '48px';
+      flower.style.transform = 'translate(-50%,-50%)';
+      flower.style.zIndex = 9999;
+
+      const colors = ['#FFD1DC','#FFC4B2','#FFECB8','#FFD6E0','#FDEBD9'];
+      const c = colors[Math.floor(Math.random()*colors.length)];
+
+      flower.innerHTML = `
+        <svg viewBox="0 0 100 100" width="48" height="48" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(50,50)">
+            <circle r="8" fill="#FF9AA2" />
+            <g id="petals">
+              <ellipse rx="8" ry="18" fill="${c}" opacity="0.95" transform="rotate(0) translate(0,-26)" />
+              <ellipse rx="8" ry="18" fill="${c}" opacity="0.95" transform="rotate(72) translate(0,-26)" />
+              <ellipse rx="8" ry="18" fill="${c}" opacity="0.95" transform="rotate(144) translate(0,-26)" />
+              <ellipse rx="8" ry="18" fill="${c}" opacity="0.95" transform="rotate(216) translate(0,-26)" />
+              <ellipse rx="8" ry="18" fill="${c}" opacity="0.95" transform="rotate(288) translate(0,-26)" />
+            </g>
+          </g>
+        </svg>
+      `;
+
+      stage.appendChild(flower);
+
+      const dx = rand(-120, 120);
+      const dy = rand(-300, -200);
+      const scale = rand(0.8, 1.4);
+      const rot = rand(-80,80);
+      const duration = rand(4000, 7000);
+
+      flower.animate([
+        { transform: `translate(-50%,-50%) translate(0px,0px) scale(0.6) rotate(0deg)`, opacity:1 },
+        { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(${scale}) rotate(${rot}deg)`, opacity:0 }
+      ], {duration: duration, easing: 'cubic-bezier(.22,.9,.31,1)', iterations:1});
+
+      setTimeout(()=>{flower.remove()}, duration+50);
     }
 
-    function showSlide(n) {
-      slides.forEach(slide => slide.classList.remove('active'));
-      currentSlide = (n + slides.length) % slides.length;
-      slides[currentSlide].classList.add('active');
-    }
-
-    function changeSlide(n) {
-      showSlide(currentSlide + n);
-    }
-
-    setInterval(() => {
-      if (document.getElementById('slideshow').style.display === 'block') {
-        changeSlide(1);
+    function burstFromButton(){
+      const rect = btn.getBoundingClientRect();
+      for(let i=0;i<12;i++){
+        const px = rect.left + rect.width/2 + rand(-60,60);
+        const py = rect.top + rect.height/2 + rand(-20,20);
+        createFlower(px, py);
       }
-    }, 5000);
+    }
 
-    document.addEventListener('click', () => {
-      const music = document.getElementById('background-music');
-      if (music.paused) {
-        music.play().catch(e => console.log('Music play failed'));
+    btn.addEventListener('click', ()=>{
+      const card = document.getElementById('card');
+      card.animate([
+        { boxShadow: '0 10px 30px rgba(114,79,79,0.08)' },
+        { boxShadow: '0 20px 40px rgba(246,104,94,0.18)' },
+        { boxShadow: '0 10px 30px rgba(114,79,79,0.08)' }
+      ], { duration: 700 });
+
+      burstFromButton();
+      let i=0; const sprinkle = setInterval(()=>{ burstFromButton(); i++; if(i>6) clearInterval(sprinkle)}, 600);
+
+      btn.animate([
+        { transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }
+      ], {duration:420});
+    });
+
+    window.addEventListener('load', ()=>{
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      for(let k=0;k<10;k++){
+        const px = rand(w*0.15, w*0.85);
+        const py = rand(h*0.75, h*0.95);
+        setTimeout(()=>createFlower(px, py), k*400+200);
       }
-    }, { once: true });
+    });
   </script>
 </body>
-</html> 
+</html>
