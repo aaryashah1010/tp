@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Apology & Hug</title>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
+    :root {
+      --color: #414141;
+      --dur: 6s; /* change this value if you want a different duration */
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
@@ -19,54 +24,44 @@
 
     .container {
       text-align: center;
-      max-width: 700px;
+      width: min(700px, 92vw);
       padding: 30px;
       background: #fff8e7;
-      border-radius: 25px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
       display: none;
+      position: relative;
+      overflow: visible;
     }
 
     .container.active {
       display: block;
-      animation: fadeIn 1s ease-in-out;
+      animation: fadeIn 400ms ease-in-out;
     }
 
     .btn {
       padding: 12px 25px;
-      font-size: 1.5em;
+      font-size: 1.2rem;
       background: #ff7675;
       color: white;
       border: none;
       border-radius: 50px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: transform 160ms ease, background 160ms ease;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
     }
 
-    .btn:hover {
-      background: #d63031;
-      transform: scale(1.05);
-    }
+    .btn:hover { transform: translateY(-3px); background: #d63031; }
 
-    h1, h2 {
-      margin-bottom: 20px;
-    }
-
-    p {
-      font-size: 1.5em;
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
+    h1, h2 { margin-bottom: 18px; }
+    p { font-size: 1.2rem; line-height: 1.45; margin-bottom: 18px; white-space: pre-wrap; }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(18px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Hug Animation Styles (your code adapted) */
-    $color: #414141;
-    $dur: 6s;
-
+    /* Hug animation styles (converted to plain CSS using vars) */
     .main {
       top: 50%;
       left: 50%;
@@ -74,6 +69,9 @@
       transform: translate(-50%, -50%);
       display: flex;
       flex-direction: column;
+      align-items: center;
+      width: 100%;
+      pointer-events: none;
     }
     .main::before {
       content: '';
@@ -86,17 +84,26 @@
       background-color: white;
       border-radius: 100%;
       z-index: -1;
+      opacity: 0.95;
     }
-    .sent { opacity: 0; animation: 6s appear linear infinite; }
+
+    .sent {
+      opacity: 0;
+      transition: opacity 300ms ease;
+      pointer-events: auto;
+      margin-top: 14px;
+    }
+    .sent.show { opacity: 1; }
+
     .human {
       position: relative;
       width: 189px;
       height: 143px;
+      pointer-events: none;
     }
     .left-hand, .right-hand {
-      width: 42px;
-      height: 11px;
-      border: 3px solid #414141;
+      width: 42px; height: 11px;
+      border: 3px solid var(--color);
       border-right: none;
       border-top-left-radius: 15px 8px;
       border-bottom-left-radius: 15px 8px;
@@ -104,93 +111,66 @@
     }
     .left-hand { transform: translate(18px, 84px) rotate(31deg); }
     .right-hand { transform: translate(119px, 82px) rotate(142deg); }
+
     .face {
       position: absolute;
-      width: 83px;
-      height: 86px;
-      border: 3px solid #414141;
+      width: 83px; height: 86px;
+      border: 3px solid var(--color);
       border-radius: 43px;
       transform: translate(48px, 18px);
     }
     .face::after {
-      content: "";
-      height: 18px;
-      width: 60px;
-      background: white;
-      position: absolute;
-      top: 73px;
-      left: 12px;
+      content: ""; height: 18px; width: 60px; background: white;
+      position: absolute; top: 73px; left: 12px;
     }
+
     .left-eye, .right-eye {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      background: #414141;
-      border-bottom: 2px solid #999;
-      border-radius: 100%;
-      animation: 6s blink linear infinite;
+      position: absolute; width: 8px; height: 8px;
+      background: var(--color); border-bottom: 2px solid #999; border-radius: 100%;
+      animation: blink var(--dur) linear infinite;
     }
     .left-eye::before, .right-eye::before {
-      content: '';
-      position: absolute;
-      left: 4px;
-      top: 2px;
-      width: 2px;
-      height: 2px;
-      border-radius: 2px;
-      background-color: white;
+      content: ''; position: absolute; left: 4px; top: 2px;
+      width: 2px; height: 2px; border-radius: 2px; background-color: white;
     }
     .left-eye { top: 31px; left: 15px; }
     .right-eye { top: 28px; left: 52px; }
+
     .nose {
-      position: absolute;
-      top: 35px;
-      left: 33px;
-      width: 5px;
-      height: 6px;
-      border-radius: 100%;
-      border: 3px solid #414141;
-      border-top-color: transparent;
+      position: absolute; top: 35px; left: 33px;
+      width: 5px; height: 6px; border-radius: 100%;
+      border: 3px solid var(--color); border-top-color: transparent;
     }
+
     #heart {
-      position: absolute;
-      left: 76px;
-      top: 96px;
-      font-size: 32px;
+      position: absolute; left: 76px; top: 96px; font-size: 32px;
       color: red;
-      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
-                   -1px 1px 0 #000, 1px 1px 0 #000;
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+      pointer-events: none;
     }
+
     .loading-bar {
-      border: 3px solid #414141;
-      height: 20px;
-      width: 180px;
-      padding: 3px;
-      transform: skewX(5deg);
+      border: 3px solid var(--color);
+      height: 20px; width: 180px; padding: 3px; transform: skewX(5deg);
+      margin-top: 12px;
     }
     .loader {
-      background-color: #414141;
-      left: 0;
-      width: 0;
-      height: 100%;
-      animation: 6s fill linear infinite;
+      background-color: var(--color);
+      left: 0; width: 0; height: 100%;
+      animation: none; /* we'll start via JS to allow restart */
     }
+
+    /* keyframes */
     @keyframes fill {
       0% { width: 0; }
       10% { width: 0; }
       70% { width: 100%; }
       100% { width: 100%; }
     }
-    @keyframes appear {
-      0% { opacity: 0; }
-      75% { opacity: 0; }
-      76% { opacity: 1; }
-      100% { opacity: 1; }
-    }
     @keyframes blink {
       0% { transform: scaleY(1); }
       15% { transform: scaleY(1); }
-      16% { transform: scaleY(0.1); }
+      16% { transform: scaleY(0.12); }
       17% { transform: scaleY(1); }
       100% { transform: scaleY(1); }
     }
@@ -208,23 +188,23 @@
   <div class="container" id="page2">
     <h1>My Apology 💌</h1>
     <p>
-      Sorry maine phir se kharab baat ki, but I am really sorry for that...  
-      I was very hurt when you told that, but ab mai bhul gaya wo.  
-      I just want ke tu happy ho jaaye.  
-      I was not aware ke ye drink can take us to this much,  
-      it’s just that I can’t see aah.  
-      Isliye chod ye sab, I am really very sorry for hurting you.  
-      I won’t do it again... bas leave this now.  
+Sorry maine phir se kharab baat ki, but I am really sorry for that...
+I was very hurt when you told that, but ab mai bhul gaya wo.
+I just want ke tu happy ho jaaye.
+I was not aware ke ye drink can take us to this much,
+it’s just that I can’t see aah.
+Isliye chod ye sab, I am really very sorry for hurting you.
+I won’t do it again... bas leave this now.
     </p>
     <h2>🤗 Do you want a hug?</h2>
     <button class="btn" onclick="showPage(3)">Yes, send me a hug!</button>
   </div>
 
   <!-- Page 3: Hug Animation -->
-  <div class="container" id="page3">
-    <div class="main">
+  <div class="container" id="page3" style="min-height: 380px;">
+    <div class="main" aria-hidden="false">
       <h1>Sending Virtual Hug 🤗</h1>
-      <div class="human">
+      <div class="human" aria-hidden="true">
         <div class="left-hand"></div>
         <div class="right-hand"></div>
         <div class="face">
@@ -234,18 +214,64 @@
         </div>
         <i class="material-icons" id="heart">favorite</i>
       </div>
-      <h2>loading...</h2>
+
+      <h2 id="loadingText">loading...</h2>
       <div class="loading-bar">
-        <div class="loader"></div>
+        <div class="loader" id="loader"></div>
       </div>
-      <h1 class="sent">Hug Sent! ❤️</h1>
+
+      <h1 class="sent" id="sentText">Hug Sent! ❤️</h1>
+
+      <div style="margin-top:18px;">
+        <button class="btn" id="backBtn" onclick="showPage(1)" style="display:none; pointer-events: auto;">Back to Home</button>
+      </div>
     </div>
   </div>
 
   <script>
     function showPage(num) {
       document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-      document.getElementById('page' + num).classList.add('active');
+      const el = document.getElementById('page' + num);
+      el.classList.add('active');
+
+      // if we show page 3, run hug animation
+      if (num === 3) startHugAnimation();
+      else {
+        // hide back button if leaving page3
+        const backBtn = document.getElementById('backBtn');
+        if (backBtn) backBtn.style.display = 'none';
+      }
+    }
+
+    function startHugAnimation() {
+      const page3 = document.getElementById('page3');
+      const loader = document.getElementById('loader');
+      const sentText = document.getElementById('sentText');
+      const backBtn = document.getElementById('backBtn');
+      const loadingText = document.getElementById('loadingText');
+
+      // Reset states
+      loader.style.animation = 'none';
+      sentText.classList.remove('show');
+      loadingText.textContent = 'loading...';
+      backBtn.style.display = 'none';
+
+      // reflow to restart animation
+      void loader.offsetWidth;
+
+      // read duration from CSS var (e.g. "6s")
+      const durStr = getComputedStyle(document.documentElement).getPropertyValue('--dur').trim() || '6s';
+      const durMs = parseFloat(durStr) * 1000;
+
+      // Start loader animation (runs forwards once)
+      loader.style.animation = `${durStr} fill linear forwards`;
+
+      // show "Hug Sent!" after full animation completes
+      setTimeout(() => {
+        sentText.classList.add('show');
+        loadingText.textContent = 'done';
+        backBtn.style.display = 'inline-block';
+      }, durMs + 80);
     }
   </script>
 
