@@ -2,278 +2,406 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Apology & Hug</title>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For You 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --color: #414141;
-      --dur: 6s; /* change this value if you want a different duration */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      font-family: "Caveat", cursive;
-      background: linear-gradient(135deg, #fee6ad, #ffd8be, #fab1a0);
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+      overflow: hidden;
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     .container {
-      text-align: center;
-      width: min(700px, 92vw);
-      padding: 30px;
-      background: #fff8e7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      max-width: 95%;
+      width: 100%;
+      height: 90vh;
+      padding: 20px;
+    }
+
+    /* Slideshow */
+    .photo-section {
+      flex-shrink: 0;
+    }
+
+    .slideshow {
+      position: relative;
+      width: 280px;
+      height: 280px;
       border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      transition: opacity 1s ease;
+    }
+
+    .slideshow img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .slideshow img.active {
+      opacity: 1;
+    }
+
+    /* My photo & sorry message */
+    .my-photo {
       display: none;
       position: relative;
-      overflow: visible;
+      width: 280px;
+      height: 280px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 1.5s ease forwards;
     }
 
-    .container.active {
-      display: block;
-      animation: fadeIn 400ms ease-in-out;
+    .my-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
-    .btn {
-      padding: 12px 25px;
-      font-size: 1.2rem;
-      background: #ff7675;
-      color: white;
+    .sorry-message {
+      display: none;
+      text-align: center;
+      font-size: 1.2em;
+      margin-top: 15px;
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    /* Text message area - SCROLLABLE */
+    .message {
+      flex: 1;
+      max-width: 550px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .message::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .message::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .message::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .message::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .message h1 {
+      font-size: 2em;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .message p {
+      font-size: 1.1em;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* Buttons */
+    button {
+      background: #fff;
+      color: #ee9ca7;
       border: none;
-      border-radius: 50px;
+      font-size: 1em;
+      font-weight: 600;
+      padding: 12px 25px;
+      border-radius: 25px;
       cursor: pointer;
-      transition: transform 160ms ease, background 160ms ease;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+      margin: 10px 5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .btn:hover { transform: translateY(-3px); background: #d63031; }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
 
-    h1, h2 { margin-bottom: 18px; }
-    p { font-size: 1.2rem; line-height: 1.45; margin-bottom: 18px; white-space: pre-wrap; }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    /* Hug GIF */
+    .gif-container {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+      animation: fadeIn 2s ease-in forwards;
+    }
+
+    .gif-container img {
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .gif-container p {
+      margin-top: 10px;
+      font-size: 1.2em;
+    }
+
+    /* Floating hearts and flowers */
+    .heart, .flower {
+      position: absolute;
+      bottom: -50px;
+      font-size: 24px;
+      animation: floatUp 6s infinite ease-in;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-800px) scale(1.5);
+        opacity: 0;
+      }
+    }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    /* Hug animation styles (converted to plain CSS using vars) */
-    .main {
-      top: 50%;
-      left: 50%;
+    /* Side buttons */
+    .side-buttons {
       position: absolute;
-      transform: translate(-50%, -50%);
+      right: 20px;
+      bottom: 20px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      width: 100%;
-      pointer-events: none;
-    }
-    .main::before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 500px;
-      height: 500px;
-      transform: translate(-50%, -50%);
-      background-color: white;
-      border-radius: 100%;
-      z-index: -1;
-      opacity: 0.95;
+      gap: 10px;
     }
 
-    .sent {
-      opacity: 0;
-      transition: opacity 300ms ease;
-      pointer-events: auto;
-      margin-top: 14px;
-    }
-    .sent.show { opacity: 1; }
-
-    .human {
-      position: relative;
-      width: 189px;
-      height: 143px;
-      pointer-events: none;
-    }
-    .left-hand, .right-hand {
-      width: 42px; height: 11px;
-      border: 3px solid var(--color);
-      border-right: none;
-      border-top-left-radius: 15px 8px;
-      border-bottom-left-radius: 15px 8px;
-      position: absolute;
-    }
-    .left-hand { transform: translate(18px, 84px) rotate(31deg); }
-    .right-hand { transform: translate(119px, 82px) rotate(142deg); }
-
-    .face {
-      position: absolute;
-      width: 83px; height: 86px;
-      border: 3px solid var(--color);
-      border-radius: 43px;
-      transform: translate(48px, 18px);
-    }
-    .face::after {
-      content: ""; height: 18px; width: 60px; background: white;
-      position: absolute; top: 73px; left: 12px;
+    .side-btn {
+      background: #fff;
+      color: #ee9ca7;
+      font-size: 0.95em;
+      font-weight: 600;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .left-eye, .right-eye {
-      position: absolute; width: 8px; height: 8px;
-      background: var(--color); border-bottom: 2px solid #999; border-radius: 100%;
-      animation: blink var(--dur) linear infinite;
-    }
-    .left-eye::before, .right-eye::before {
-      content: ''; position: absolute; left: 4px; top: 2px;
-      width: 2px; height: 2px; border-radius: 2px; background-color: white;
-    }
-    .left-eye { top: 31px; left: 15px; }
-    .right-eye { top: 28px; left: 52px; }
-
-    .nose {
-      position: absolute; top: 35px; left: 33px;
-      width: 5px; height: 6px; border-radius: 100%;
-      border: 3px solid var(--color); border-top-color: transparent;
+    .side-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
     }
 
-    #heart {
-      position: absolute; left: 76px; top: 96px; font-size: 32px;
-      color: red;
-      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-      pointer-events: none;
-    }
+    /* Responsive for mobile */
+    @media screen and (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        gap: 20px;
+        height: auto;
+        max-height: 90vh;
+      }
 
-    .loading-bar {
-      border: 3px solid var(--color);
-      height: 20px; width: 180px; padding: 3px; transform: skewX(5deg);
-      margin-top: 12px;
-    }
-    .loader {
-      background-color: var(--color);
-      left: 0; width: 0; height: 100%;
-      animation: none; /* we'll start via JS to allow restart */
-    }
+      .slideshow, .my-photo {
+        width: 220px;
+        height: 220px;
+      }
 
-    /* keyframes */
-    @keyframes fill {
-      0% { width: 0; }
-      10% { width: 0; }
-      70% { width: 100%; }
-      100% { width: 100%; }
-    }
-    @keyframes blink {
-      0% { transform: scaleY(1); }
-      15% { transform: scaleY(1); }
-      16% { transform: scaleY(0.12); }
-      17% { transform: scaleY(1); }
-      100% { transform: scaleY(1); }
+      .message {
+        max-width: 90%;
+        max-height: 50vh;
+      }
+
+      .message h1 {
+        font-size: 1.5em;
+      }
+
+      .message p {
+        font-size: 0.95em;
+      }
+
+      .side-buttons {
+        right: 10px;
+        bottom: 10px;
+      }
+
+      .side-btn {
+        font-size: 0.85em;
+        padding: 10px 15px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="container">
 
-  <!-- Page 1: Start -->
-  <div class="container active" id="page1">
-    <h1>Hey...</h1>
-    <button class="btn" onclick="showPage(2)">Press Here</button>
-  </div>
-
-  <!-- Page 2: Apology Message -->
-  <div class="container" id="page2">
-    <h1>My Apology 💌</h1>
-    <p>
-Sorry maine phir se kharab baat ki, but I am really sorry for that...
-I was very hurt when you told that, but ab mai bhul gaya wo.
-I just want ke tu happy ho jaaye.
-I was not aware ke ye drink can take us to this much,
-it’s just that I can’t see aah.
-Isliye chod ye sab, I am really very sorry for hurting you.
-I won’t do it again... bas leave this now.
-    </p>
-    <h2>🤗 Do you want a hug?</h2>
-    <button class="btn" onclick="showPage(3)">Yes, send me a hug!</button>
-  </div>
-
-  <!-- Page 3: Hug Animation -->
-  <div class="container" id="page3" style="min-height: 380px;">
-    <div class="main" aria-hidden="false">
-      <h1>Sending Virtual Hug 🤗</h1>
-      <div class="human" aria-hidden="true">
-        <div class="left-hand"></div>
-        <div class="right-hand"></div>
-        <div class="face">
-          <div class="left-eye"></div>
-          <div class="right-eye"></div>
-          <div class="nose"></div>
-        </div>
-        <i class="material-icons" id="heart">favorite</i>
+    <!-- Slideshow + My Photo -->
+    <div class="photo-section">
+      <div class="slideshow" id="slideshow">
+        <img src="image1.jpg" class="active" alt="Image 1" />
+        <img src="image2.jpg" alt="Image 2" />
+        <img src="image3.jpg" alt="Image 3" />
       </div>
 
-      <h2 id="loadingText">loading...</h2>
-      <div class="loading-bar">
-        <div class="loader" id="loader"></div>
+      <div class="my-photo" id="myPhoto">
+        <img src="image4.jpg" alt="My Photo" />
       </div>
 
-      <h1 class="sent" id="sentText">Hug Sent! ❤️</h1>
+      <p class="sorry-message" id="sorryMessage">I'm really sorry 😔💞</p>
+    </div>
 
-      <div style="margin-top:18px;">
-        <button class="btn" id="backBtn" onclick="showPage(1)" style="display:none; pointer-events: auto;">Back to Home</button>
+    <!-- Message area - SCROLLABLE -->
+    <div class="message">
+      <h1>💖 Hi Yaar 💖</h1>
+      <p>
+        Firstly thank you so much for everything — also for supporting me hena 💕<br><br>
+        Kaafi time se kuch diya nai tha to I thought this is the day... and right tune abhi kya baat boli yaar 😭💖<br><br>
+        I am so lucky that I got you aah really thank you so much mere jaan ❤️ I'm very lucky...<br><br>
+        But unlike you aah 😜 you got me — which is such a aahh... I must say I am the luckiest guy ever and I feel sorry for you 😂<br><br>
+        You are the bestestttttttt 💞<br><br>
+
+        Sad thi baat karne the majak karne se upar he nai aaya mai 😅 and this was obviously not the way to manao ofc — and I'm sorry for that 😔<br><br>
+        Maaf kar de mujhe hena 🥺 chal thoda has le ekdam 😄<br><br>
+        Dekh pyare pyare photos humare, it's so cuteee! You're looking so beautiful and pretty 🥰<br><br>
+
+        You are the bestessssttttt and I'm very luckky 😍 mujhe koi kaleshi nai best bandi mili hai 💫<br><br>
+        Ik tu gussa hogi ke I went with my friends — daru pagall itna nich naii huu 😤<br><br>
+        Tere liye ekdam mast chiz leke aayaa hhuu 😘<br><br>
+        Der bhi ho gayi hai kaafi, it's 11:45 😅 really sorry for that 💖<br><br>
+
+        Chal dekh aaram se niche mera pyara sa hug accept kar virtually he 🤗<br><br>
+        Real mai chaie to aur dena hai 😳💞<br><br>
+        Aur wo dusra button bhi click jaroor karnaaaa henaaa 😘<br><br>
+
+        Challo tab tab ke liye byee bacha ❤️❤️
+      </p>
+
+      <div class="button-group">
+        <button onclick="openHug()">Click to get a Hug 🤗</button>
+        <button onclick="playMusic()">🎵 Pause/Play Music</button>
+      </div>
+
+      <div class="gif-container" id="hug">
+        <img src="https://media.giphy.com/media/od5H3PmEG5EVq/giphy.gif" width="200" alt="Hug Gif" />
+        <p>A big warm hug just for you 🤗💞</p>
       </div>
     </div>
+
   </div>
 
-  <script>
-    function showPage(num) {
-      document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-      const el = document.getElementById('page' + num);
-      el.classList.add('active');
+  <!-- Side buttons -->
+  <div class="side-buttons">
+    <button class="side-btn" onclick="showSorry()">Kya mai sorry bolu? 🥺</button>
+  </div>
 
-      // if we show page 3, run hug animation
-      if (num === 3) startHugAnimation();
-      else {
-        // hide back button if leaving page3
-        const backBtn = document.getElementById('backBtn');
-        if (backBtn) backBtn.style.display = 'none';
+  <!-- Background Music (auto-play + loop) -->
+  <audio id="bg-music" autoplay loop>
+    <source src="song.mp3" type="audio/mpeg" />
+    Your browser does not support audio.
+  </audio>
+
+  <script>
+    let musicPlaying = true;
+
+    // Floating emojis
+    const symbols = ["💖", "🌸", "💐", "❤️", "🌷", "💞"];
+    setInterval(() => {
+      const el = document.createElement("div");
+      el.className = Math.random() > 0.5 ? "heart" : "flower";
+      el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      el.style.left = Math.random() * 100 + "vw";
+      el.style.animationDuration = 5 + Math.random() * 5 + "s";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 10000);
+    }, 500);
+
+    // Slideshow
+    let slideIndex = 0;
+    const slides = document.querySelectorAll(".slideshow img");
+    setInterval(() => {
+      slides[slideIndex].classList.remove("active");
+      slideIndex = (slideIndex + 1) % slides.length;
+      slides[slideIndex].classList.add("active");
+    }, 3000);
+
+    // Hug button
+    function openHug() {
+      const hugDiv = document.getElementById("hug");
+      hugDiv.style.display = hugDiv.style.display === "block" ? "none" : "block";
+      if (hugDiv.style.display === "block") {
+        hugDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
 
-    function startHugAnimation() {
-      const page3 = document.getElementById('page3');
-      const loader = document.getElementById('loader');
-      const sentText = document.getElementById('sentText');
-      const backBtn = document.getElementById('backBtn');
-      const loadingText = document.getElementById('loadingText');
-
-      // Reset states
-      loader.style.animation = 'none';
-      sentText.classList.remove('show');
-      loadingText.textContent = 'loading...';
-      backBtn.style.display = 'none';
-
-      // reflow to restart animation
-      void loader.offsetWidth;
-
-      // read duration from CSS var (e.g. "6s")
-      const durStr = getComputedStyle(document.documentElement).getPropertyValue('--dur').trim() || '6s';
-      const durMs = parseFloat(durStr) * 1000;
-
-      // Start loader animation (runs forwards once)
-      loader.style.animation = `${durStr} fill linear forwards`;
-
-      // show "Hug Sent!" after full animation completes
-      setTimeout(() => {
-        sentText.classList.add('show');
-        loadingText.textContent = 'done';
-        backBtn.style.display = 'inline-block';
-      }, durMs + 80);
+    // Sorry button
+    function showSorry() {
+      document.getElementById("slideshow").style.display = "none";
+      document.getElementById("myPhoto").style.display = "block";
+      document.getElementById("sorryMessage").style.display = "block";
     }
-  </script>
 
+    // Music control
+    function playMusic() {
+      const audio = document.getElementById('bg-music');
+      if (audio.paused) {
+        audio.play();
+        musicPlaying = true;
+      } else {
+        audio.pause();
+        musicPlaying = false;
+      }
+    }
+
+    // Attempt to start music automatically
+    window.addEventListener('load', () => {
+      const audio = document.getElementById('bg-music');
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Resume on any user gesture if autoplay blocked
+          document.addEventListener('click', () => {
+            audio.play();
+          }, { once: true });
+        });
+      }
+    });
+  </script>
 </body>
 </html>
