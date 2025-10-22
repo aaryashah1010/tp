@@ -1,407 +1,252 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>For You 💖</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy New Year — Mobile Greeting</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root{
+      --bg:#0b1020;
+      --card:#0f1724;
+      --accent:#ff5c4d;
+      --text:#eef2ff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071026 0%, #0b1020 60%);color:var(--text);}
+    .screen{display:none;height:100vh;width:100vw;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
+    .active{display:flex}
 
-    body {
-      font-family: "Poppins", sans-serif;
-      color: #fff;
-      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-      overflow: hidden;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
+    /* Firecracker / landing */
+    .landing{flex-direction:column;gap:18px;text-align:center}
+    .title{font-size:20px;font-weight:700}
+    .sub{font-size:13px;opacity:.9}
+
+    /* big round button */
+    .blast-btn{background:linear-gradient(135deg,var(--accent),#ffb399);border:none;border-radius:50%;width:120px;height:120px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;box-shadow:0 10px 25px rgba(0,0,0,.4);cursor:pointer}
+    .blast-btn:active{transform:scale(.98)}
+    .hint{font-size:12px;opacity:.85}
+
+    /* canvas overlay for fireworks */
+    #fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:40}
+
+    /* content card: picture + message side-by-side on mobile */
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(6px);border-radius:12px;padding:12px;width:100%;max-width:680px;box-shadow: 0 8px 30px rgba(2,6,23,.6);display:flex;gap:10px;align-items:center;}
+    .pic{flex:1;min-width:40%;max-width:48%}
+    .pic img{width:100%;height:auto;border-radius:10px;display:block}
+    .msg{flex:1;font-size:14px;line-height:1.35}
+    .controls{display:flex;gap:10px;justify-content:center;margin-top:12px}
+    .btn{padding:10px 14px;border-radius:10px;border:none;background:rgba(255,255,255,0.06);color:var(--text);font-weight:600}
+
+    /* page 2: full picture + long message */
+    .page2{flex-direction:column;gap:12px;padding-top:30px}
+    .hero{width:100%;max-width:720px;border-radius:12px;overflow:hidden}
+    .hero img{width:100%;height:auto;display:block}
+    .longmsg{background:rgba(0,0,0,0.25);padding:12px;border-radius:10px;font-size:15px;line-height:1.5}
+
+    /* hug overlay */
+    .hug-overlay{position:fixed;inset:0;background:linear-gradient(0deg, rgba(2,4,11,.8), rgba(2,4,11,.6));display:none;z-index:60;align-items:center;justify-content:center;padding:20px}
+    .hug-overlay.show{display:flex}
+    .hug-card{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;text-align:center}
+    .hug-card img{width:260px;max-width:90%;height:auto;border-radius:10px}
+
+    /* small screens: try to keep side-by-side but allow wrap */
+    @media (max-width:420px){
+      .card{flex-direction:row;gap:10px}
+      .pic{max-width:46%}
+      .msg{font-size:13px}
+      .blast-btn{width:100px;height:100px}
     }
-
-    .container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 40px;
-      max-width: 95%;
-      width: 100%;
-      height: 90vh;
-      padding: 20px;
-    }
-
-    /* Slideshow */
-    .photo-section {
-      flex-shrink: 0;
-    }
-
-    .slideshow {
-      position: relative;
-      width: 280px;
-      height: 280px;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      transition: opacity 1s ease;
-    }
-
-    .slideshow img {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-    }
-
-    .slideshow img.active {
-      opacity: 1;
-    }
-
-    /* My photo & sorry message */
-    .my-photo {
-      display: none;
-      position: relative;
-      width: 280px;
-      height: 280px;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      animation: fadeIn 1.5s ease forwards;
-    }
-
-    .my-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .sorry-message {
-      display: none;
-      text-align: center;
-      font-size: 1.2em;
-      margin-top: 15px;
-      animation: fadeIn 1.5s ease forwards;
-    }
-
-    /* Text message area - SCROLLABLE */
-    .message {
-      flex: 1;
-      max-width: 550px;
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    .message::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .message::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-    }
-
-    .message::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-    }
-
-    .message::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.5);
-    }
-
-    .message h1 {
-      font-size: 2em;
-      margin-bottom: 15px;
-      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    .message p {
-      font-size: 1.1em;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    /* Buttons */
-    button {
-      background: #fff;
-      color: #ee9ca7;
-      border: none;
-      font-size: 1em;
-      font-weight: 600;
-      padding: 12px 25px;
-      border-radius: 25px;
-      cursor: pointer;
-      margin: 10px 5px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-    }
-
-    .button-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    /* Hug GIF */
-    .gif-container {
-      display: none;
-      margin-top: 20px;
-      text-align: center;
-      animation: fadeIn 2s ease-in forwards;
-    }
-
-    .gif-container img {
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .gif-container p {
-      margin-top: 10px;
-      font-size: 1.2em;
-    }
-
-    /* Floating hearts and flowers */
-    .heart, .flower {
-      position: absolute;
-      bottom: -50px;
-      font-size: 24px;
-      animation: floatUp 6s infinite ease-in;
-      pointer-events: none;
-    }
-
-    @keyframes floatUp {
-      0% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-800px) scale(1.5);
-        opacity: 0;
-      }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    /* Side buttons */
-    .side-buttons {
-      position: absolute;
-      right: 20px;
-      bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .side-btn {
-      background: #fff;
-      color: #ee9ca7;
-      font-size: 0.95em;
-      font-weight: 600;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 25px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .side-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
-    }
-
-    /* Responsive for mobile */
-    @media screen and (max-width: 768px) {
-      .container {
-        flex-direction: column;
-        gap: 20px;
-        height: auto;
-        max-height: 90vh;
-      }
-
-      .slideshow, .my-photo {
-        width: 220px;
-        height: 220px;
-      }
-
-      .message {
-        max-width: 90%;
-        max-height: 50vh;
-      }
-
-      .message h1 {
-        font-size: 1.5em;
-      }
-
-      .message p {
-        font-size: 0.95em;
-      }
-
-      .side-buttons {
-        right: 10px;
-        bottom: 10px;
-      }
-
-      .side-btn {
-        font-size: 0.85em;
-        padding: 10px 15px;
-      }
+    @media (max-width:360px){
+      /* if truly small, stack but keep the side-by-side feeling via small image */
+      .card{flex-direction:row}
+      .pic{max-width:40%}
+      .msg{font-size:12px}
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <!-- Canvas for fireworks animation -->
+  <canvas id="fx"></canvas>
 
-    <!-- Slideshow + My Photo -->
-    <div class="photo-section">
-      <div class="slideshow" id="slideshow">
-        <img src="image1.jpg" class="active" alt="Image 1" />
-        <img src="image2.jpg" alt="Image 2" />
-        <img src="image3.jpg" alt="Image 3" />
-      </div>
-
-      <div class="my-photo" id="myPhoto">
-        <img src="image4.jpg" alt="My Photo" />
-      </div>
-
-      <p class="sorry-message" id="sorryMessage">I'm really sorry 😔</p>
-    </div>
-
-    <!-- Message area - SCROLLABLE -->
-    <div class="message">
-      <h1>💖 Hi Yaar 💖</h1>
-      <p>
-        Firstly thank you so much for everything — also for supporting me hena<br><br>
-        Kaafi time se kuch diya nai tha to I thought this is the day... and right tune abhi kya baat boli yaar<br><br>
-        I am so lucky that I got you aah really thank you so much mere jaan ❤️ I'm very lucky...<br><br>
-        But unlike you aah  you got me — which is such a aahh... I must say I am the luckiest guy ever and I feel sorry for you 😂<br><br>
-        You are the bestestttttttt <br><br>
-
-        Sad thi baat karne the majak karne se upar he nai aaya mai  and this was obviously not the way to manao ofc — and I'm sorry for that 😔<br><br>
-        Maaf kar de mujhe hena  chal thoda has le ekdam <br><br>
-        Dekh pyare pyare photos humare, it's so cuteee! You're looking so beautiful and pretty <br><br>
-
-        You are the bestessssttttt and I'm very luckky mujhe koi kaleshi nai best bandi mili hai <br><br>
-        Ik tu gussa hogi ke I went with my friends — daru pagall itna nich naii huu <br><br>
-        Tere liye ekdam mast chiz leke aayaa hhuu <br><br>
-        Der bhi ho gayi hai kaafi, it's 11:45  really sorry for that <br><br>
-
-        Chal dekh aaram se niche mera pyara sa hug accept kar virtually he <br><br>
-        Real mai chaie to aur dena hai <br><br>
-        Aur wo dusra button bhi click jaroor karnaaaa henaaa <br><br>
-
-        Challo tab tab ke liye byee bacha ❤️❤️
-      </p>
-
-      <div class="button-group">
-        <button onclick="openHug()">Click to get a Hug 🤗</button>
-        <button onclick="playMusic()">🎵 Pause/Play Music</button>
-      </div>
-
-      <div class="gif-container" id="hug">
-        <img src="https://media.giphy.com/media/od5H3PmEG5EVq/giphy.gif" width="200" alt="Hug Gif" />
-        <p>A big warm hug just for you 🤗💞</p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Side buttons -->
-  <div class="side-buttons">
-    <button class="side-btn" onclick="showSorry()">Kya mai sorry bolu? 🥺</button>
-  </div>
-
-  <!-- Background Music (auto-play + loop) -->
-  <audio id="bg-music" autoplay loop>
-    <source src="song.mp3" type="audio/mpeg" />
-    Your browser does not support audio.
+  <!-- Audio: replace 'tu_chaie.mp3' with your song file in same folder -->
+  <audio id="song" preload="none">
+    <source src="song1.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
   </audio>
 
+  <!-- SCREEN 1: Landing with firecracker button -->
+  <main id="screen1" class="screen landing active">
+    <div style="max-width:420px;width:100%;">
+      <div class="title">✨ Happy New Year ✨</div>
+      <div class="sub">Tap the firecracker to start the celebration</div>
+      <div style="height:22px"></div>
+      <div style="display:flex;justify-content:center">
+        <button id="blastBtn" class="blast-btn">Firecracker</button>
+      </div>
+      <div style="height:12px"></div>
+    </div>
+  </main>
+
+  <!-- SCREEN 1b: After blast show card with picture + short message side-by-side -->
+  <section id="screenContent" class="screen" style="flex-direction:column;gap:12px;">
+    <div class="card">
+      <div class="pic"><img id="pic1" src="image2.jpg" alt="Us (replace us.jpg)"></div>
+      <div class="msg">
+        <div style="font-weight:700;margin-bottom:8px">To my favorite person,</div>
+        <div id="shortMsg">Wishing you a New Year filled with joy, success, and warm memories. May every day bring you closer to the dreams in your heart. Let's make this year unforgettable — together.</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="nextToPage2" class="btn">Next</button>
+      <button id="replayBtn" class="btn">Replay Firecracker</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: full hero + long message -->
+  <section id="screen2" class="screen page2">
+    <div style="width:50%;max-width:500px;display:flex;flex-direction:column;align-items:stretch;">
+      <div class="longmsg" id="longMessage">
+        <h2 style="margin-top:0">Happy New Year Bacha!</h2>
+        <p>
+          My dearest — as the calendar turns its page, I look back and i see all the funs and memories we had together and ofc the fights we had. But through it all, mere pyar aaur tera dhyan rakhna is just increasing day by day. I feel so lucky to have you in my life and i cherish every momemt we share together. I am sorry mai tujhe khush nai rakh pata and aah that day conversation is still in my mind and tune wo tera rota hua photo bheja tha and you were like why i am getting all these the answer is because of me..Your health is affecting me which i never wanted to happen. I promise to take better care of you and make sure you are always happy and healthy.
+        </p>
+        <p>
+          Thank you for being with me and choosing me every day though i am worst and not making you happy. I promise to make this year better for you and for us. May this year bring us closer together, filled with love, laughter, and endless adventures. I am excited to see what the future holds for us and i know that with you by my side, we can conquer anything.(Dar mat tu mujhse door jana i will never let that happen agar koi bhi aage kuch ho gaya sath mai lad lenge)
+        </p>
+        <p style="font-weight:700;margin-bottom:0">Signing Off :- Jo tujhe naam dena ho</p>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
+        <button id="showHug" class="btn">Next</button>
+        <button id="backToStart" class="btn">Back</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HUG GIF overlay -->
+  <div id="hugOverlay" class="hug-overlay">
+    <div class="hug-card">
+      <div style="font-weight:700;margin-bottom:8px">Big warm hug 🤗</div>
+      <img id="hugGif" src="puuung-hug-puuung.gif" alt="Hug GIF (replace hug.gif)">
+      <div style="height:12px"></div>
+      <button id="closeHug" class="btn">Close</button>
+    </div>
+  </div>
+
   <script>
-    let musicPlaying = true;
+    // Simple mobile-first navigation
+    const screen1 = document.getElementById('screen1');
+    const screenContent = document.getElementById('screenContent');
+    const screen2 = document.getElementById('screen2');
+    const hugOverlay = document.getElementById('hugOverlay');
+    const blastBtn = document.getElementById('blastBtn');
+    const song = document.getElementById('song');
+    const replayBtn = document.getElementById('replayBtn');
 
-    // Floating emojis
-    const symbols = ["💖", "🌸", "💐", "❤️", "🌷", "💞"];
-    setInterval(() => {
-      const el = document.createElement("div");
-      el.className = Math.random() > 0.5 ? "heart" : "flower";
-      el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-      el.style.left = Math.random() * 100 + "vw";
-      el.style.animationDuration = 5 + Math.random() * 5 + "s";
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 10000);
-    }, 500);
+    // show/hide helpers
+    function show(el){ el.classList.add('active'); }
+    function hide(el){ el.classList.remove('active'); }
 
-    // Slideshow
-    let slideIndex = 0;
-    const slides = document.querySelectorAll(".slideshow img");
-    setInterval(() => {
-      slides[slideIndex].classList.remove("active");
-      slideIndex = (slideIndex + 1) % slides.length;
-      slides[slideIndex].classList.add("active");
-    }, 3000);
+    // initial state
+    show(screen1);
 
-    // Hug button
-    function openHug() {
-      const hugDiv = document.getElementById("hug");
-      hugDiv.style.display = hugDiv.style.display === "block" ? "none" : "block";
-      if (hugDiv.style.display === "block") {
-        hugDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Fireworks particles on canvas
+    const canvas = document.getElementById('fx');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+    window.addEventListener('resize', ()=>{ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight });
+
+    // Particle system
+    class Particle{
+      constructor(x,y,color,vel,mass){this.x=x;this.y=y;this.vx=vel.x;this.vy=vel.y;this.alpha=1;this.color=color;this.size=2+Math.random()*3}
+      update(){this.vy+=0.02;this.x+=this.vx;this.y+=this.vy;this.alpha-=0.01}
+      draw(){ctx.globalAlpha=this.alpha;ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}
+    }
+    let particles=[];
+    function burst(x,y){
+      const colors=['#ff4d4d','#ffd166','#06d6a0','#4d8bff','#c77dff','#ff8fab'];
+      const count=60+Math.floor(Math.random()*60);
+      for(let i=0;i<count;i++){
+        const angle=Math.random()*Math.PI*2;const speed=Math.random()*4+1;
+        const vel={x:Math.cos(angle)*speed, y:Math.sin(angle)*speed};
+        particles.push(new Particle(x,y,colors[Math.floor(Math.random()*colors.length)],vel))
       }
     }
-
-    // Sorry button
-    function showSorry() {
-      document.getElementById("slideshow").style.display = "none";
-      document.getElementById("myPhoto").style.display = "block";
-      document.getElementById("sorryMessage").style.display = "block";
+    let animating=false;
+    function loop(){
+      ctx.clearRect(0,0,W,H);
+      for(let i=particles.length-1;i>=0;i--){
+        const p=particles[i];p.update();p.draw();if(p.alpha<=0){particles.splice(i,1)}
+      }
+      if(animating) requestAnimationFrame(loop);
     }
 
-    // Music control
-    function playMusic() {
-      const audio = document.getElementById('bg-music');
-      if (audio.paused) {
-        audio.play();
-        musicPlaying = true;
-      } else {
-        audio.pause();
-        musicPlaying = false;
-      }
+    // Play audio + show content
+    function triggerCelebration(){
+      // start small fireworks at center
+      const cx = W/2; const cy = H/3;
+      burst(cx,cy);
+      burst(cx-80,cy+40);
+      burst(cx+80,cy+40);
+      animating=true; loop();
+      // play song (user gesture ensured since triggered by click)
+      song.currentTime=0; song.play().catch(e=>console.log('audio play blocked',e));
+      // show content after a short delay so user sees animation
+      hide(screen1); show(screenContent);
     }
 
-    // Attempt to start music automatically
-    window.addEventListener('load', () => {
-      const audio = document.getElementById('bg-music');
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Resume on any user gesture if autoplay blocked
-          document.addEventListener('click', () => {
-            audio.play();
-          }, { once: true });
-        });
-      }
+    blastBtn.addEventListener('click', ()=>{
+      triggerCelebration();
     });
+
+    replayBtn.addEventListener('click', ()=>{
+      // replay small fireworks and audio
+      const cx = W/2; const cy = H/3; burst(cx,cy); burst(cx-80,cy+40); burst(cx+80,cy+40);
+      if(!animating){animating=true; loop()}
+      song.currentTime=0; song.play().catch(()=>{});
+    });
+
+    // move to page 2
+    document.getElementById('nextToPage2').addEventListener('click', ()=>{
+      hide(screenContent); show(screen2);
+      // optionally pause song
+      // song.pause();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+
+    // page2 controls
+    document.getElementById('showHug').addEventListener('click', ()=>{
+      hugOverlay.classList.add('show');
+    });
+    document.getElementById('closeHug').addEventListener('click', ()=>{
+      hugOverlay.classList.remove('show');
+    });
+    document.getElementById('backToStart').addEventListener('click', ()=>{
+      hide(screen2); show(screen1);
+    });
+
+    // Also allow tapping the canvas to create bursts (cute effect)
+    canvas.addEventListener('click', (e)=>{
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left; const y = e.clientY - rect.top; burst(x,y);
+      if(!animating){animating=true; loop()}
+    });
+
+    // touch friendly: create bursts on touchstart
+    canvas.addEventListener('touchstart', (e)=>{e.preventDefault();const t=e.touches[0];burst(t.clientX,t.clientY);if(!animating){animating=true; loop()}} , {passive:false});
+
+    // accessibility: if audio file missing, ignore errors
+    song.addEventListener('error', ()=>{console.log('audio file missing or cannot be played. Replace tu_chaie.mp3 in the same folder.')});
+
+    // small optimization: stop loop when particles empty
+    (function cleanupLoop(){
+      setInterval(()=>{
+        if(animating && particles.length===0){animating=false; ctx.clearRect(0,0,W,H)}
+      },600);
+    })();
+
+    // -- Optional: preload images softly (no external urls used so skip)
   </script>
 </body>
 </html>
