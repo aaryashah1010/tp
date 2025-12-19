@@ -1,252 +1,890 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Happy New Year — Mobile Greeting</title>
-  <style>
-    :root{
-      --bg:#0b1020;
-      --card:#0f1724;
-      --accent:#ff5c4d;
-      --text:#eef2ff;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    }
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071026 0%, #0b1020 60%);color:var(--text);}
-    .screen{display:none;height:100vh;width:100vw;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
-    .active{display:flex}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Letter for You</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* Firecracker / landing */
-    .landing{flex-direction:column;gap:18px;text-align:center}
-    .title{font-size:20px;font-weight:700}
-    .sub{font-size:13px;opacity:.9}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f1e8 0%, #e8dcc8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 1s ease;
+        }
 
-    /* big round button */
-    .blast-btn{background:linear-gradient(135deg,var(--accent),#ffb399);border:none;border-radius:50%;width:120px;height:120px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;box-shadow:0 10px 25px rgba(0,0,0,.4);cursor:pointer}
-    .blast-btn:active{transform:scale(.98)}
-    .hint{font-size:12px;opacity:.85}
+        /* PHASE 1 - ENTRY SCREEN */
+        #entryScreen {
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.8s ease;
+        }
 
-    /* canvas overlay for fireworks */
-    #fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:40}
+        #entryScreen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+        }
 
-    /* content card: picture + message side-by-side on mobile */
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(6px);border-radius:12px;padding:12px;width:100%;max-width:680px;box-shadow: 0 8px 30px rgba(2,6,23,.6);display:flex;gap:10px;align-items:center;}
-    .pic{flex:1;min-width:40%;max-width:48%}
-    .pic img{width:100%;height:auto;border-radius:10px;display:block}
-    .msg{flex:1;font-size:14px;line-height:1.35}
-    .controls{display:flex;gap:10px;justify-content:center;margin-top:12px}
-    .btn{padding:10px 14px;border-radius:10px;border:none;background:rgba(255,255,255,0.06);color:var(--text);font-weight:600}
+        .entry-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 60px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            animation: breathe 4s ease-in-out infinite;
+        }
 
-    /* page 2: full picture + long message */
-    .page2{flex-direction:column;gap:12px;padding-top:30px}
-    .hero{width:100%;max-width:720px;border-radius:12px;overflow:hidden}
-    .hero img{width:100%;height:auto;display:block}
-    .longmsg{background:rgba(0,0,0,0.25);padding:12px;border-radius:10px;font-size:15px;line-height:1.5}
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
 
-    /* hug overlay */
-    .hug-overlay{position:fixed;inset:0;background:linear-gradient(0deg, rgba(2,4,11,.8), rgba(2,4,11,.6));display:none;z-index:60;align-items:center;justify-content:center;padding:20px}
-    .hug-overlay.show{display:flex}
-    .hug-card{background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;text-align:center}
-    .hug-card img{width:260px;max-width:90%;height:auto;border-radius:10px}
+        .entry-message {
+            font-size: 24px;
+            color: #4a4a4a;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
 
-    /* small screens: try to keep side-by-side but allow wrap */
-    @media (max-width:420px){
-      .card{flex-direction:row;gap:10px}
-      .pic{max-width:46%}
-      .msg{font-size:13px}
-      .blast-btn{width:100px;height:100px}
-    }
-    @media (max-width:360px){
-      /* if truly small, stack but keep the side-by-side feeling via small image */
-      .card{flex-direction:row}
-      .pic{max-width:40%}
-      .msg{font-size:12px}
-    }
-  </style>
+        .heart-button {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border: 2px solid #d4a5a5;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+
+        .heart-button:hover {
+            transform: scale(1.1);
+            background: #fff5f5;
+            border-color: #c48888;
+        }
+
+        .heart-icon {
+            font-size: 36px;
+            color: #d4a5a5;
+        }
+
+        .entry-instruction {
+            font-size: 16px;
+            color: #777;
+            margin-top: 15px;
+        }
+
+        .qr-container {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* PHASE 2 - LETTER SCREEN */
+        #letterScreen {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        #letterScreen.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .paper {
+            background: #fefdfb;
+            padding: 60px 50px;
+            border-radius: 2px;
+            box-shadow: 
+                0 1px 3px rgba(0, 0, 0, 0.12),
+                0 10px 30px rgba(0, 0, 0, 0.15),
+                inset 0 0 100px rgba(139, 121, 94, 0.03);
+            position: relative;
+            transform: rotate(-0.5deg);
+            transition: all 0.5s ease;
+            line-height: 2;
+            min-height: 600px;
+        }
+
+        .paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 31px,
+                    rgba(139, 121, 94, 0.04) 31px,
+                    rgba(139, 121, 94, 0.04) 32px
+                );
+            pointer-events: none;
+            border-radius: 2px;
+        }
+
+        .timestamp {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 14px;
+            color: #999;
+            font-family: 'Courier New', monospace;
+        }
+
+        .letter-content {
+            font-family: 'Segoe Script', 'Bradley Hand', cursive;
+            font-size: 18px;
+            color: #2c2416;
+            position: relative;
+            z-index: 1;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 22px;
+            background: #2c2416;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .thinking {
+            color: #999;
+            font-style: italic;
+            font-size: 16px;
+        }
+
+        .signature {
+            margin-top: 40px;
+            text-align: right;
+            font-size: 20px;
+        }
+
+        .final-message {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 16px;
+            color: #888;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .final-message.visible {
+            opacity: 1;
+        }
+
+        /* Hug Animation */
+        .hug-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0);
+            pointer-events: none;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 1s ease, background 1s ease;
+        }
+
+        .hug-container.visible {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .hug-scene {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+
+        .person {
+            position: absolute;
+            width: 80px;
+            height: 140px;
+            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .person-left {
+            left: 50px;
+            transform: translateX(-150px) scale(0.8);
+            opacity: 0;
+        }
+
+        .person-right {
+            right: 50px;
+            transform: translateX(150px) scale(0.8);
+            opacity: 0;
+        }
+
+        .hug-container.visible .person-left {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+        }
+
+        .hug-container.visible .person-right {
+            transform: translateX(0) scale(1);
+            opacity: 1;
+        }
+
+        .head {
+            width: 40px;
+            height: 40px;
+            background: #f4c2a5;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            animation: breatheHead 2s ease-in-out infinite;
+        }
+
+        @keyframes breatheHead {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        .body {
+            width: 50px;
+            height: 70px;
+            background: #d4a5a5;
+            margin: 5px auto;
+            border-radius: 25px 25px 0 0;
+            position: relative;
+        }
+
+        .person-right .body {
+            background: #a5b8d4;
+        }
+
+        .arm {
+            position: absolute;
+            width: 15px;
+            height: 50px;
+            background: #d4a5a5;
+            border-radius: 10px;
+            top: 10px;
+        }
+
+        .person-right .arm {
+            background: #a5b8d4;
+        }
+
+        .arm-left {
+            left: -10px;
+            transform-origin: top center;
+            animation: hugArmLeft 1.5s ease-in-out 1.5s forwards;
+        }
+
+        .arm-right {
+            right: -10px;
+            transform-origin: top center;
+            animation: hugArmRight 1.5s ease-in-out 1.5s forwards;
+        }
+
+        @keyframes hugArmLeft {
+            0% { transform: rotate(20deg); }
+            100% { transform: rotate(110deg); }
+        }
+
+        @keyframes hugArmRight {
+            0% { transform: rotate(-20deg); }
+            100% { transform: rotate(-110deg); }
+        }
+
+        .heart-float {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0;
+            animation: floatHeart 3s ease-out forwards;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-150px) scale(1.2);
+            }
+        }
+
+        .hug-text {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            font-family: 'Segoe Script', cursive;
+            opacity: 0;
+            animation: fadeInText 1s ease-in 3s forwards;
+        }
+
+        @keyframes fadeInText {
+            to { opacity: 1; }
+        }
+
+        /* Audio toggle */
+        .audio-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .audio-toggle:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .entry-card {
+                padding: 40px 30px;
+            }
+
+            .entry-message {
+                font-size: 20px;
+            }
+
+            .paper {
+                padding: 40px 30px;
+                transform: rotate(0deg);
+            }
+
+            .letter-content {
+                font-size: 16px;
+                line-height: 1.8;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Canvas for fireworks animation -->
-  <canvas id="fx"></canvas>
+    <!-- Audio Toggle -->
+    <button class="audio-toggle" id="audioToggle">🔇 Sound Off</button>
 
-  <!-- Audio: replace 'tu_chaie.mp3' with your song file in same folder -->
-  <audio id="song" preload="none">
-    <source src="song1.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
-
-  <!-- SCREEN 1: Landing with firecracker button -->
-  <main id="screen1" class="screen landing active">
-    <div style="max-width:420px;width:100%;">
-      <div class="title">✨ Happy New Year ✨</div>
-      <div class="sub">Tap the firecracker to start the celebration</div>
-      <div style="height:22px"></div>
-      <div style="display:flex;justify-content:center">
-        <button id="blastBtn" class="blast-btn">Firecracker</button>
-      </div>
-      <div style="height:12px"></div>
+    <!-- PHASE 1: Entry Screen -->
+    <div id="entryScreen">
+        <div class="entry-card">
+            <p class="entry-message">Before you read this…<br>I just need one moment of your attention.</p>
+            
+            <div class="heart-button" id="heartButton">
+                <span class="heart-icon">♥</span>
+            </div>
+            
+            <p class="entry-instruction">Tap the heart to begin</p>
+            
+            <div class="qr-container">
+                <p style="color: #999; font-size: 14px; margin-bottom: 10px;">or scan this</p>
+                <div class="qr-code">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="100" height="100" fill="white"/>
+                        <g fill="black">
+                            <rect x="10" y="10" width="25" height="25"/>
+                            <rect x="65" y="10" width="25" height="25"/>
+                            <rect x="10" y="65" width="25" height="25"/>
+                            <rect x="15" y="15" width="15" height="15" fill="white"/>
+                            <rect x="70" y="15" width="15" height="15" fill="white"/>
+                            <rect x="15" y="70" width="15" height="15" fill="white"/>
+                            <rect x="45" y="15" width="5" height="5"/>
+                            <rect x="55" y="15" width="5" height="5"/>
+                            <rect x="45" y="25" width="5" height="5"/>
+                            <rect x="50" y="30" width="10" height="5"/>
+                            <rect x="40" y="40" width="20" height="5"/>
+                            <rect x="45" y="50" width="15" height="5"/>
+                            <rect x="70" y="45" width="10" height="5"/>
+                            <rect x="65" y="55" width="15" height="5"/>
+                            <rect x="45" y="65" width="10" height="10"/>
+                            <rect x="60" y="70" width="5" height="10"/>
+                            <rect x="70" y="80" width="15" height="5"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </div>
     </div>
-  </main>
 
-  <!-- SCREEN 1b: After blast show card with picture + short message side-by-side -->
-  <section id="screenContent" class="screen" style="flex-direction:column;gap:12px;">
-    <div class="card">
-      <div class="pic"><img id="pic1" src="image2.jpg" alt="Us (replace us.jpg)"></div>
-      <div class="msg">
-        <div style="font-weight:700;margin-bottom:8px">To my favorite person,</div>
-        <div id="shortMsg">Wishing you a New Year filled with joy, success, and warm memories. May every day bring you closer to the dreams in your heart. Let's make this year unforgettable — together.</div>
-      </div>
+    <!-- PHASE 2: Letter Screen -->
+    <div id="letterScreen">
+        <div class="paper">
+            <div class="timestamp" id="timestamp"></div>
+            <div class="letter-content" id="letterContent"></div>
+            <div class="final-message" id="finalMessage">I miss you.</div>
+        </div>
     </div>
-    <div class="controls">
-      <button id="nextToPage2" class="btn">Next</button>
-      <button id="replayBtn" class="btn">Replay Firecracker</button>
+
+    <!-- Hug Animation -->
+    <div class="hug-container" id="hugContainer">
+        <div class="hug-scene">
+            <div class="person person-left">
+                <div class="head"></div>
+                <div class="body">
+                    <div class="arm arm-left"></div>
+                    <div class="arm arm-right"></div>
+                </div>
+            </div>
+            <div class="person person-right">
+                <div class="head"></div>
+                <div class="body">
+                    <div class="arm arm-left"></div>
+                    <div class="arm arm-right"></div>
+                </div>
+            </div>
+        </div>
+        <div class="hug-text">I miss you...</div>
     </div>
-  </section>
 
-  <!-- SCREEN 2: full hero + long message -->
-  <section id="screen2" class="screen page2">
-    <div style="width:50%;max-width:500px;display:flex;flex-direction:column;align-items:stretch;">
-      <div class="longmsg" id="longMessage">
-        <h2 style="margin-top:0">Happy New Year Bacha!</h2>
-        <p>
-          My dearest — as the calendar turns its page, I look back and i see all the funs and memories we had together and ofc the fights we had. But through it all, mere pyar aaur tera dhyan rakhna is just increasing day by day. I feel so lucky to have you in my life and i cherish every momemt we share together. I am sorry mai tujhe khush nai rakh pata and aah that day conversation is still in my mind and tune wo tera rota hua photo bheja tha and you were like why i am getting all these the answer is because of me..Your health is affecting me which i never wanted to happen. I promise to take better care of you and make sure you are always happy and healthy.
-        </p>
-        <p>
-          Thank you for being with me and choosing me every day though i am worst and not making you happy. I promise to make this year better for you and for us. May this year bring us closer together, filled with love, laughter, and endless adventures. I am excited to see what the future holds for us and i know that with you by my side, we can conquer anything.(Dar mat tu mujhse door jana i will never let that happen agar koi bhi aage kuch ho gaya sath mai lad lenge)
-        </p>
-        <p style="font-weight:700;margin-bottom:0">Signing Off :- Jo tujhe naam dena ho</p>
-      </div>
+    <script>
+        // ==========================================
+        // CONFIGURATION - CUSTOMIZE YOUR LETTER HERE
+        // ==========================================
+        const LETTER_SECTIONS = [
+            {
+                text: "Hey…\n\n",
+                pauseAfter: 2000
+            },
+            {
+                text: "Ik I messed up a lot. ",
+                pauseAfter: 1800
+            },
+            {
+                text: "Agar aaj mil paate to letter tujhe likh ke dene wala tha but nai mil paye to… ",
+                pauseAfter: 1500
+            },
+            {
+                text: "I am coding this, a letter for you.\n\n",
+                pauseAfter: 2500
+            },
+            {
+                thinking: "thinking…",
+                duration: 3000
+            },
+            {
+                text: "I miss you a lot. ",
+                pauseAfter: 1500
+            },
+            {
+                text: "I am sorry for what I did kal. The way I spoke kal… ",
+                pauseAfter: 1800
+            },
+            {
+                text: "ik you don't deserve that. ",
+                pauseAfter: 1500
+            },
+            {
+                text: "I am really really really sorry for that, dil se",
+                pauseAfter: 1000
+            },
+            {
+                text: ".\n\n",
+                pauseAfter: 2000
+            },
+            {
+                text: "I can't even stop crying. Mere aankhe laal ho gayi hai just thinking",
+                backspace: 8,
+                rewrite: "thinking about it",
+                pauseAfter: 2000
+            },
+            {
+                text: ". And it's not overthinking please, I just think for you, for you. ",
+                pauseAfter: 2000
+            },
+            {
+                text: "Itna to maine mere parents ka bhi nai socha, I swear.\n\n",
+                pauseAfter: 2500
+            },
+            {
+                thinking: "...",
+                duration: 3000
+            },
+            {
+                text: "All that was for time and attention. Uski wajah se itna sab badh gaya. ",
+                pauseAfter: 2000
+            },
+            {
+                text: "I am sorry, really sorry for that. ",
+                pauseAfter: 1500
+            },
+            {
+                text: "I don't know what to say but I didn't mean that at all. ",
+                pauseAfter: 1800
+            },
+            {
+                text: "Mujhe ye sab bolna nai tha.\n\n",
+                pauseAfter: 2000
+            },
+            {
+                text: "But please understand… I can't live without you. ",
+                pauseAfter: 2500
+            },
+            {
+                text: "I am sorry, so much sorry. ",
+                pauseAfter: 1500
+            },
+            {
+                text: "I am just making this to make you feel happy. ",
+                pauseAfter: 2000
+            },
+            {
+                text: "I am not happy but it's my duty to make you happy because everything is because of me.\n\n",
+                pauseAfter: 2500
+            },
+            {
+                thinking: "thinking…",
+                duration: 3500
+            },
+            {
+                text: "Please forgive me, please. ",
+                pauseAfter: 1800
+            },
+            {
+                text: "I never wanted you to cry and it's not at all easy for me to forget your crying face. ",
+                pauseAfter: 2500
+            },
+            {
+                text: "I am sorry.\n\n",
+                pauseAfter: 2000
+            },
+            {
+                text: "I am a bit over in everything… I am over expressive, over sensitive, over thinker and everything over. ",
+                pauseAfter: 2000
+            },
+            {
+                text: "But this is only for 1 person and not for anyone else, not even for my parents. ",
+                pauseAfter: 2000
+            },
+            {
+                text: "So please think how much you are for me, how much…\n\n",
+                pauseAfter: 2500
+            },
+            {
+                text: "Baki kisi ke liye itna na karu. ",
+                pauseAfter: 1500
+            },
+            {
+                text: "Kal raat se rote rote I am making this for you. ",
+                pauseAfter: 2000
+            },
+            {
+                text: "Ye jatane ke liye nai bata raha, isliye bata raha hu to make you feel how much you are for me.\n\n",
+                pauseAfter: 3000
+            },
+            {
+                thinking: "...",
+                duration: 3000
+            },
+            {
+                text: "Aah… I am sorry. Pls maaf kar de pls. ",
+                pauseAfter: 2000
+            },
+            {
+                text: "You be happy after this and enjoy your day. ",
+                pauseAfter: 1800
+            },
+            {
+                text: "I will be happy on my own, I swear. ",
+                pauseAfter: 1500
+            },
+            {
+                text: "You are the best. ",
+                pauseAfter: 1500
+            },
+            {
+                text: "Pls don't take me wrong in any way, this is pure dil se ekdam. ",
+                pauseAfter: 2000
+            },
+            {
+                text: "Pls plss…\n\n",
+                pauseAfter: 2500
+            },
+            {
+                text: "I am sorry. ",
+                pauseAfter: 2000
+            },
+            {
+                thinking: "...",
+                duration: 2500
+            },
+            {
+                text: "I miss you...\n\n",
+                pauseAfter: 3000,
+                showHug: true
+            },
+            {
+                signature: true,
+                text: "— Aarya",
+                pauseAfter: 2000
+            }
+        ];
 
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
-        <button id="showHug" class="btn">Next</button>
-        <button id="backToStart" class="btn">Back</button>
-      </div>
-    </div>
-  </section>
+        // ==========================================
+        // AUDIO SYSTEM
+        // ==========================================
+        let audioEnabled = false;
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-  <!-- HUG GIF overlay -->
-  <div id="hugOverlay" class="hug-overlay">
-    <div class="hug-card">
-      <div style="font-weight:700;margin-bottom:8px">Big warm hug 🤗</div>
-      <img id="hugGif" src="puuung-hug-puuung.gif" alt="Hug GIF (replace hug.gif)">
-      <div style="height:12px"></div>
-      <button id="closeHug" class="btn">Close</button>
-    </div>
-  </div>
+        function playTypingSound() {
+            if (!audioEnabled) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800 + Math.random() * 200;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.05);
+        }
 
-  <script>
-    // Simple mobile-first navigation
-    const screen1 = document.getElementById('screen1');
-    const screenContent = document.getElementById('screenContent');
-    const screen2 = document.getElementById('screen2');
-    const hugOverlay = document.getElementById('hugOverlay');
-    const blastBtn = document.getElementById('blastBtn');
-    const song = document.getElementById('song');
-    const replayBtn = document.getElementById('replayBtn');
+        function playPaperSound() {
+            if (!audioEnabled) return;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 100;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.03, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
 
-    // show/hide helpers
-    function show(el){ el.classList.add('active'); }
-    function hide(el){ el.classList.remove('active'); }
+        document.getElementById('audioToggle').addEventListener('click', function() {
+            audioEnabled = !audioEnabled;
+            this.textContent = audioEnabled ? '🔊 Sound On' : '🔇 Sound Off';
+        });
 
-    // initial state
-    show(screen1);
+        // ==========================================
+        // PHASE 1: ENTRY LOGIC
+        // ==========================================
+        const entryScreen = document.getElementById('entryScreen');
+        const letterScreen = document.getElementById('letterScreen');
+        const heartButton = document.getElementById('heartButton');
 
-    // Fireworks particles on canvas
-    const canvas = document.getElementById('fx');
-    const ctx = canvas.getContext('2d');
-    let W = canvas.width = window.innerWidth;
-    let H = canvas.height = window.innerHeight;
-    window.addEventListener('resize', ()=>{ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight });
+        function checkURLParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('start') === 'true') {
+                beginLetter();
+            }
+        }
 
-    // Particle system
-    class Particle{
-      constructor(x,y,color,vel,mass){this.x=x;this.y=y;this.vx=vel.x;this.vy=vel.y;this.alpha=1;this.color=color;this.size=2+Math.random()*3}
-      update(){this.vy+=0.02;this.x+=this.vx;this.y+=this.vy;this.alpha-=0.01}
-      draw(){ctx.globalAlpha=this.alpha;ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}
-    }
-    let particles=[];
-    function burst(x,y){
-      const colors=['#ff4d4d','#ffd166','#06d6a0','#4d8bff','#c77dff','#ff8fab'];
-      const count=60+Math.floor(Math.random()*60);
-      for(let i=0;i<count;i++){
-        const angle=Math.random()*Math.PI*2;const speed=Math.random()*4+1;
-        const vel={x:Math.cos(angle)*speed, y:Math.sin(angle)*speed};
-        particles.push(new Particle(x,y,colors[Math.floor(Math.random()*colors.length)],vel))
-      }
-    }
-    let animating=false;
-    function loop(){
-      ctx.clearRect(0,0,W,H);
-      for(let i=particles.length-1;i>=0;i--){
-        const p=particles[i];p.update();p.draw();if(p.alpha<=0){particles.splice(i,1)}
-      }
-      if(animating) requestAnimationFrame(loop);
-    }
+        function beginLetter() {
+            playPaperSound();
+            entryScreen.classList.add('hidden');
+            
+            setTimeout(() => {
+                letterScreen.classList.add('visible');
+                setTimestamp();
+                setTimeout(() => {
+                    startTyping();
+                }, 500);
+            }, 800);
+        }
 
-    // Play audio + show content
-    function triggerCelebration(){
-      // start small fireworks at center
-      const cx = W/2; const cy = H/3;
-      burst(cx,cy);
-      burst(cx-80,cy+40);
-      burst(cx+80,cy+40);
-      animating=true; loop();
-      // play song (user gesture ensured since triggered by click)
-      song.currentTime=0; song.play().catch(e=>console.log('audio play blocked',e));
-      // show content after a short delay so user sees animation
-      hide(screen1); show(screenContent);
-    }
+        heartButton.addEventListener('click', beginLetter);
+        checkURLParams();
 
-    blastBtn.addEventListener('click', ()=>{
-      triggerCelebration();
-    });
+        // ==========================================
+        // PHASE 2: LETTER TYPING LOGIC
+        // ==========================================
+        const letterContent = document.getElementById('letterContent');
+        const finalMessage = document.getElementById('finalMessage');
+        let currentText = '';
+        let sectionIndex = 0;
+        let charIndex = 0;
+        let isTyping = false;
 
-    replayBtn.addEventListener('click', ()=>{
-      // replay small fireworks and audio
-      const cx = W/2; const cy = H/3; burst(cx,cy); burst(cx-80,cy+40); burst(cx+80,cy+40);
-      if(!animating){animating=true; loop()}
-      song.currentTime=0; song.play().catch(()=>{});
-    });
+        function setTimestamp() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'AM' : 'PM';
+            const displayHours = hours % 12 || 12;
+            document.getElementById('timestamp').textContent = `${displayHours}:${minutes} ${ampm}`;
+        }
 
-    // move to page 2
-    document.getElementById('nextToPage2').addEventListener('click', ()=>{
-      hide(screenContent); show(screen2);
-      // optionally pause song
-      // song.pause();
-      window.scrollTo({top:0,behavior:'smooth'});
-    });
+        function getTypingSpeed() {
+            // Vary typing speed naturally between 50-150ms
+            return 50 + Math.random() * 100;
+        }
 
-    // page2 controls
-    document.getElementById('showHug').addEventListener('click', ()=>{
-      hugOverlay.classList.add('show');
-    });
-    document.getElementById('closeHug').addEventListener('click', ()=>{
-      hugOverlay.classList.remove('show');
-    });
-    document.getElementById('backToStart').addEventListener('click', ()=>{
-      hide(screen2); show(screen1);
-    });
+        function typeCharacter(char) {
+            currentText += char;
+            letterContent.innerHTML = currentText + '<span class="cursor"></span>';
+            playTypingSound();
+        }
 
-    // Also allow tapping the canvas to create bursts (cute effect)
-    canvas.addEventListener('click', (e)=>{
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left; const y = e.clientY - rect.top; burst(x,y);
-      if(!animating){animating=true; loop()}
-    });
+        function deleteCharacter() {
+            currentText = currentText.slice(0, -1);
+            letterContent.innerHTML = currentText + '<span class="cursor"></span>';
+            playTypingSound();
+        }
 
-    // touch friendly: create bursts on touchstart
-    canvas.addEventListener('touchstart', (e)=>{e.preventDefault();const t=e.touches[0];burst(t.clientX,t.clientY);if(!animating){animating=true; loop()}} , {passive:false});
+        async function processSection(section) {
+            // Handle thinking pause
+            if (section.thinking) {
+                const thinkingText = `<span class="thinking">${section.thinking}</span>`;
+                letterContent.innerHTML = currentText + thinkingText + '<span class="cursor"></span>';
+                await sleep(section.duration);
+                letterContent.innerHTML = currentText + '<span class="cursor"></span>';
+                return;
+            }
 
-    // accessibility: if audio file missing, ignore errors
-    song.addEventListener('error', ()=>{console.log('audio file missing or cannot be played. Replace tu_chaie.mp3 in the same folder.')});
+            // Handle signature
+            if (section.signature) {
+                currentText += '\n';
+                letterContent.innerHTML = currentText + '<span class="cursor"></span>';
+                await sleep(500);
+            }
 
-    // small optimization: stop loop when particles empty
-    (function cleanupLoop(){
-      setInterval(()=>{
-        if(animating && particles.length===0){animating=false; ctx.clearRect(0,0,W,H)}
-      },600);
-    })();
+            // Type the text character by character
+            const text = section.text;
+            for (let i = 0; i < text.length; i++) {
+                typeCharacter(text[i]);
+                await sleep(getTypingSpeed());
+            }
 
-    // -- Optional: preload images softly (no external urls used so skip)
-  </script>
+            // Handle backspace and rewrite
+            if (section.backspace && section.rewrite) {
+                await sleep(800);
+                for (let i = 0; i < section.backspace; i++) {
+                    deleteCharacter();
+                    await sleep(80);
+                }
+                await sleep(300);
+                for (let char of section.rewrite) {
+                    typeCharacter(char);
+                    await sleep(getTypingSpeed());
+                }
+            }
+
+            // Show hug animation if specified
+            if (section.showHug) {
+                await sleep(1000);
+                showHugAnimation();
+            }
+
+            // Pause after section
+            if (section.pauseAfter) {
+                await sleep(section.pauseAfter);
+            }
+        }
+
+        async function startTyping() {
+            for (const section of LETTER_SECTIONS) {
+                await processSection(section);
+            }
+
+            // Finish - remove cursor and show final message
+            await sleep(1000);
+            letterContent.innerHTML = currentText;
+            await sleep(2000);
+            finalMessage.classList.add('visible');
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // ==========================================
+        // HUG ANIMATION
+        // ==========================================
+        const hugContainer = document.getElementById('hugContainer');
+
+        function showHugAnimation() {
+            hugContainer.classList.add('visible');
+            
+            // Create floating hearts
+            setTimeout(() => {
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => {
+                        createFloatingHeart();
+                    }, i * 400);
+                }
+            }, 2000);
+
+            // Hide hug animation after it plays
+            setTimeout(() => {
+                hugContainer.classList.remove('visible');
+            }, 8000);
+        }
+
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart-float';
+            heart.textContent = '♥';
+            heart.style.left = (40 + Math.random() * 20) + '%';
+            heart.style.top = '50%';
+            heart.style.animationDelay = '0s';
+            heart.style.color = `hsl(${Math.random() * 60 + 330}, 70%, 70%)`;
+            
+            hugContainer.querySelector('.hug-scene').appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
